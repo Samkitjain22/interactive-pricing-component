@@ -34,14 +34,14 @@ Users should be able to:
 ![Desktop Screenshot](./screenshot/desktop-view.png)
 
 ### 📱 Mobile View
-![Mobile Screenshot](./screenshot/mobile-view.png)
+![Mobile Screenshot](./screenshot/mobile-view.jpeg)
 
 ---
 
 ## 🔗 Links
 
-- **Solution URL:** [https://github.com/Samkitjain22/interactive-pricing-component](#GITHUB)
-- **Live Site URL:** [https://samkitjain22.github.io/interactive-pricing-component/](#LIVE_WEBSITE)
+- **Solution URL:** [GITHUB](#https://github.com/Samkitjain22/interactive-pricing-component)
+- **Live Site URL:** [LIVE WEBSITE](#https://samkitjain22.github.io/interactive-pricing-component)
 
 ---
 
