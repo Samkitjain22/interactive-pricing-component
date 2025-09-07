@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Pricing Component</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Theme Colors */
+            --soft-cyan: hsl(174, 77%, 80%);
+            --strong-cyan: hsl(174, 86%, 45%);
+            --light-grayish-red: hsl(14, 92%, 95%);
+            --light-red: hsl(15, 100%, 70%);
+            --pale-blue: hsl(226, 100%, 87%);
+            --white: hsl(0, 0%, 100%);
+            --very-pale-blue: hsl(230, 100%, 99%);
+            --light-grayish-blue: hsl(224, 65%, 95%);
+            --light-grayish-blue-toggle: hsl(223, 50%, 87%);
+            --grayish-blue: hsl(225, 20%, 60%);
+            --dark-desaturated-blue: hsl(227, 35%, 25%);
+            
+            /* Dark Theme Colors */
+            --dark-bg: hsl(230, 20%, 15%);
+            --dark-card-bg: hsl(228, 25%, 20%);
+            --dark-text: hsl(225, 30%, 85%);
+            --dark-slider-bg: hsl(227, 30%, 25%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            background-color: var(--very-pale-blue);
+            color: var(--grayish-blue);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1440' height='449'%3E%3Cpath fill='%23F1F5FE' fill-rule='evenodd' d='M0 0h1440v449H191.5C85.737 449 0 363.263 0 257.5V0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 100% auto;
+            background-position: top center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='146' height='145'%3E%3Cg fill='none' fill-rule='evenodd' stroke='%23CFD8EF'%3E%3Ccircle cx='63' cy='82' r='62.5'/%3E%3Ccircle cx='105' cy='41' r='40.5'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center top;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1440' height='449'%3E%3Cpath fill='hsl(230, 20%, 10%)' fill-rule='evenodd' d='M0 0h1440v449H191.5C85.737 449 0 363.263 0 257.5V0z'/%3E%3C/svg%3E");
+        }
+
+        body.dark-mode::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='146' height='145'%3E%3Cg fill='none' fill-rule='evenodd' stroke='hsl(230, 20%, 25%)'%3E%3Ccircle cx='63' cy='82' r='62.5'/%3E%3Ccircle cx='105' cy='41' r='40.5'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .container {
+            width: 100%;
+            max-width: 540px;
+            margin: 0 auto;
+            z-index: 1;
+            position: relative;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--light-grayish-blue-toggle);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--strong-cyan);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark-desaturated-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode h1 {
+            color: var(--white);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 55%;
+            margin: 0 auto;
+            color: var(--grayish-blue);
+        }
+
+        body.dark-mode .subtitle {
+            color: var(--dark-text);
+        }
+
+        @media (max-width: 600px) {
+            .subtitle {
+                max-width: 100%;
+            }
+        }
+
+        .pricing-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        body.dark-mode .pricing-card {
+            background-color: var(--dark-card-bg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .pageviews {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            color: #000000;
+        }
+
+        body.dark-mode .pageviews {
+            color: var(--dark-text);
+        }
+
+        .slider-container {
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .slider-bar {
+            position: relative;
+            height: 10px;
+            background-color: var(--light-grayish-blue);
+            border-radius: 5px;
+            margin-bottom: 2.5rem;
+        }
+
+        body.dark-mode .slider-bar {
+            background-color: var(--dark-slider-bg);
+        }
+
+        .slider-progress {
+            height: 100%;
+            background-color: var(--strong-cyan);
+            border-radius: 5px;
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: var(--strong-cyan);
+            border-radius: 50%;
+            box-shadow: 0 15px 20px rgba(0, 255, 231, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .slider-handle.bounce {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -55%) scale(1.1); }
+        }
+
+        .slider-handle:hover {
+            background-color: hsl(174, 86%, 35%);
+        }
+
+        .price-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .price {
+            color: var(--dark-text);
+        }
+
+        .period {
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        body.dark-mode .period {
+            color: var(--dark-text);
+        }
+
+        .billing {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            background-color: var(--white);
+            padding: 1rem;
+            border-radius: 10px;
+            color: var(--grayish-blue);
+            position: relative;
+        }
+
+        body.dark-mode .billing {
+            background-color: var(--dark-card-bg);
+            color: var(--dark-text);
+        }
+
+        body.dark-mode .theme-toggle span {
+            color: var(--dark-text);
+        }
+
+        .discount {
+            background-color: var(--light-grayish-red);
+            color: var(--light-red);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            position: relative;
+        }
+
+        body.dark-mode .discount {
+            background-color: hsl(14, 92%, 20%);
+        }
+
+        .discount-tooltip {
+            display: none;
+            position: absolute;
+            background-color: var(--dark-desaturated-blue);
+            color: var(--pale-blue);
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .discount:hover .discount-tooltip {
+            display: block;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 43px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--light-grayish-blue-toggle);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .switch-slider {
+            background-color: var(--strong-cyan);
+        }
+
+        input:checked + .switch-slider:before {
+            transform: translateX(21px);
+        }
+
+        .features {
+            border-top: 1px solid var(--light-grayish-blue);
+            padding-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        body.dark-mode .features {
+            border-top: 1px solid var(--dark-slider-bg);
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .separator {
+            height: 1px;
+            background-color: var(--light-grayish-blue);
+            margin: 2rem 0;
+        }
+
+        body.dark-mode .separator {
+            background-color: var(--dark-slider-bg);
+        }
+
+        .cta-button, .save-btn button, .comparison button, .discount-code button {
+            background-color: var(--dark-desaturated-blue);
+            color: var(--pale-blue);
+            border: none;
+            border-radius: 30px;
+            padding: 0.8rem 3rem;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode .cta-button, body.dark-mode .save-btn button, body.dark-mode .comparison button, body.dark-mode .discount-code button {
+            background-color: var(--strong-cyan);
+            color: var(--dark-desaturated-blue);
+        }
+
+        .cta-button:hover, .save-btn button:hover, .comparison button:hover, .discount-code button:hover {
+            background-color: hsl(227, 35%, 15%);
+            color: white;
+        }
+
+        body.dark-mode .cta-button:hover, body.dark-mode .save-btn button:hover, body.dark-mode .comparison button:hover, body.dark-mode .discount-code button:hover {
+            background-color: hsl(174, 86%, 35%);
+            color: white;
+        }
+
+        .add-ons, .comparison, .currency-selector, .save-btn, .discount-code, .mobile-labels, .testimonials {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .add-ons select, .currency-selector select, .discount-code input {
+            padding: 0.5rem;
+            margin-right: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--light-grayish-blue);
+        }
+
+        body.dark-mode .add-ons select, body.dark-mode .currency-selector select, body.dark-mode .discount-code input {
+            background-color: var(--dark-card-bg);
+            color: var(--dark-text);
+            border-color: var(--dark-slider-bg);
+        }
+
+        .testimonials {
+            display: none; /* To be toggled via JS */
+        }
+
+        .testimonial-slide {
+            display: none;
+            padding: 1rem;
+        }
+
+        .testimonial-slide.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .pricing-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .billing {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .discount-mobile {
+                display: inline-block;
+            }
+            
+            .discount-desktop {
+                display: none;
+            }
+
+            .mobile-labels {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.8rem;
+                color: var(--grayish-blue);
+            }
+
+            body.dark-mode .mobile-labels {
+                color: var(--dark-text);
+            }
+        }
+
+        @media (min-width: 601px) {
+            .discount-mobile {
+                display: none;
+            }
+            
+            .discount-desktop {
+                display: inline-block;
+            }
+            
+            .pricing-card {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto auto auto auto auto auto auto;
+                text-align: left;
+            }
+            
+            .pageviews {
+                grid-column: 1;
+                grid-row: 1;
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+            }
+            
+            .price-container {
+                grid-column: 2;
+                grid-row: 1;
+                justify-content: flex-end;
+                margin-bottom: 0;
+            }
+            
+            .slider-container {
+                grid-column: 1 / span 2;
+                grid-row: 2;
+            }
+            
+            .billing {
+                grid-column: 1 / span 2;
+                grid-row: 3;
+                justify-content: center;
+                margin-bottom: 0;
+                background-color: var(--white);
+                padding: 1rem;
+                border-radius: 10px;
+                color: var(--grayish-blue);
+            }
+            
+            body.dark-mode .billing {
+                background-color: var(--dark-card-bg);
+                color: var(--dark-text);
+            }
+            
+            .features {
+                grid-column: 1;
+                grid-row: 4;
+                border: none;
+                padding-top: 0;
+                margin-bottom: 0;
+                text-align: left;
+            }
+            
+            .feature {
+                justify-content: flex-start;
+            }
+            
+            .separator {
+                grid-column: 1 / span 2;
+                grid-row: 5;
+                margin: 1.5rem 0;
+            }
+            
+            .cta-container {
+                grid-column: 1 / span 2;
+                grid-row: 6;
+                text-align: center;
+            }
+
+            .add-ons {
+                grid-column: 1 / span 2;
+                grid-row: 7;
+            }
+
+            .comparison {
+                grid-column: 1 / span 2;
+                grid-row: 8;
+            }
+
+            .currency-selector {
+                grid-column: 1 / span 2;
+                grid-row: 9;
+            }
+
+            .save-btn {
+                grid-column: 1 / span 2;
+                grid-row: 10;
+            }
+
+            .discount-code {
+                grid-column: 1 / span 2;
+                grid-row: 11;
+            }
+
+            .mobile-labels {
+                display: none;
+            }
+
+            .testimonials {
+                grid-column: 1 / span 2;
+                grid-row: 12;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="theme-toggle">
+            <span>Dark Mode</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="header">
+            <h1>Simple, traffic-based pricing</h1>
+            <p class="subtitle">Sign-up for our 30-day trial. No credit card required.</p>
+        </div>
+
+        <div class="pricing-card">
+            <div class="pageviews" id="pageviews">100K PAGEVIEWS</div>
+            
+            <div class="price-container">
+                <span class="price" id="price">$16.00</span>
+                <span class="period">/ month</span>
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-bar" id="slider-bar">
+                    <div class="slider-progress" id="slider-progress"></div>
+                    <div class="slider-handle" id="slider-handle" tabindex="0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="13"><g fill="#80FFF3" fill-rule="evenodd"><path d="M16 2.558v7.884a1 1 0 001.735.679l3.639-3.943a1 1 0 000-1.356l-3.64-3.943A1 1 0 0016 2.558zM6 2.558v7.884a1 1 0 01-1.735.679L.626 7.178a1 1 0 010-1.356l3.64-3.943A1 1 0 016 2.558z"/></g></svg>
+                    </div>
+                </div>
+                <div class="mobile-labels">
+                    <span>10K</span>
+                    <span>1M</span>
+                </div>
+            </div>
+            
+            <div class="billing">
+                <span>Monthly billing</span>
+                <label class="switch">
+                    <input type="checkbox" id="billing-toggle">
+                    <span class="switch-slider"></span>
+                </label>
+                <span>Yearly billing</span>
+                <div class="discount discount-desktop">25% discount
+                    <div class="discount-tooltip">Save 25% with yearly billing</div>
+                </div>
+                <div class="discount discount-mobile">-25%
+                    <div class="discount-tooltip">Save 25% with yearly billing</div>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="8"><path fill="none" stroke="#10D8C4" stroke-width="2" d="M1 4.134l1.907 1.908L7.949 1"/></svg>
+                    <span>Unlimited websites</span>
+                </div>
+                <div class="feature">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="8"><path fill="none" stroke="#10D8C4" stroke-width="2" d="M1 4.134l1.907 1.908L7.949 1"/></svg>
+                    <span>100% data ownership</span>
+                </div>
+                <div class="feature">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="8"><path fill="none" stroke="#10D8C4" stroke-width="2" d="M1 4.134l1.907 1.908L7.949 1"/></svg>
+                    <span>Email reports</span>
+                </div>
+            </div>
+            
+            <div class="separator"></div>
+            
+            <div class="cta-container">
+                <button class="cta-button">Start my trial</button>
+            </div>
+
+            <div class="add-ons">
+                <select id="add-ons">
+                    <option value="0">No Add-ons</option>
+                    <option value="5">Premium Support (+$5)</option>
+                    <option value="10">Extra Storage (+$10)</option>
+                </select>
+                <span id="add-on-price">$0.00</span>
+            </div>
+
+            <div class="comparison">
+                <button class="cta-button" id="compare-btn">Compare Plans</button>
+            </div>
+
+            <div class="currency-selector">
+                <select id="currency">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="INR">INR</option>
+                </select>
+            </div>
+
+            <div class="save-btn">
+                <button class="cta-button" id="save-btn">Save for Later</button>
+            </div>
+
+            <div class="discount-code">
+                <input type="text" id="discount-code" placeholder="Enter discount code">
+                <button class="cta-button" id="apply-code">Apply</button>
+            </div>
+
+            <div class="testimonials">
+                <div class="testimonial-slide active">
+                    "Great pricing tool! Saved us time and money." - John D.
+                </div>
+                <div class="testimonial-slide">
+                    "Easy to use and very reliable." - Sarah K.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Pricing data
+            const pricingData = [
+                { pageviews: '10K', monthlyPrice: 8 },
+                { pageviews: '50K', monthlyPrice: 12 },
+                { pageviews: '100K', monthlyPrice: 16 },
+                { pageviews: '500K', monthlyPrice: 24 },
+                { pageviews: '1M', monthlyPrice: 36 }
+            ];
+            
+            // DOM elements
+            const themeToggle = document.getElementById('theme-toggle');
+            const billingToggle = document.getElementById('billing-toggle');
+            const pageviewsEl = document.getElementById('pageviews');
+            const priceEl = document.getElementById('price');
+            const sliderProgress = document.getElementById('slider-progress');
+            const sliderHandle = document.getElementById('slider-handle');
+            const sliderBar = document.getElementById('slider-bar');
+            const billingSection = document.querySelector('.billing');
+            const addOnSelect = document.getElementById('add-ons');
+            const addOnPriceEl = document.getElementById('add-on-price');
+            const compareBtn = document.getElementById('compare-btn');
+            const currencySelect = document.getElementById('currency');
+            const saveBtn = document.getElementById('save-btn');
+            const discountCodeInput = document.getElementById('discount-code');
+            const applyCodeBtn = document.getElementById('apply-code');
+            const testimonials = document.querySelectorAll('.testimonial-slide');
+
+            // Current state
+            let currentSliderValue = 2; // Default to 100K pageviews (index 2)
+            let isYearlyBilling = false;
+            let addOnPrice = 0;
+            let currencyRate = { USD: 1, EUR: 0.85, INR: 83.5 };
+            let currentCurrency = 'USD';
+            let currencySymbols = { USD: '$', EUR: '€', INR: '₹' };
+            let testimonialIndex = 0;
+            let discountApplied = false; // Track if discount has been applied
+
+            // Update pricing with animation and currency symbol
+            function updatePricing() {
+                const priceData = pricingData[currentSliderValue];
+                const basePrice = isYearlyBilling ? priceData.monthlyPrice * 12 * 0.75 : priceData.monthlyPrice;
+                const totalPrice = (basePrice + addOnPrice) * currencyRate[currentCurrency];
+                animatePrice(priceEl, parseFloat(priceEl.textContent.replace(/[€₹$]/, '')), totalPrice);
+                pageviewsEl.textContent = `${priceData.pageviews} PAGEVIEWS`;
+                addOnPriceEl.textContent = `+${currencySymbols[currentCurrency]}${addOnPrice.toFixed(2)}`;
+                
+                const percentage = (currentSliderValue / (pricingData.length - 1)) * 100;
+                sliderProgress.style.width = `${percentage}%`;
+                sliderHandle.style.left = `${percentage}%`;
+            }
+
+            // Animate price transition
+            function animatePrice(element, start, end, duration = 300) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easeInOut = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                    element.textContent = `${currencySymbols[currentCurrency]}${((start + (end - start) * easeInOut)).toFixed(2)}`;
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        element.textContent = `${currencySymbols[currentCurrency]}${end.toFixed(2)}`;
+                    }
+                };
+                requestAnimationFrame(step);
+            }
+
+            // Initialize pricing
+            updatePricing();
+
+            // Theme toggle functionality
+            themeToggle.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode', this.checked);
+                billingSection.style.backgroundColor = this.checked ? 'var(--dark-card-bg)' : 'var(--white)';
+                billingSection.style.color = this.checked ? 'var(--dark-text)' : 'var(--grayish-blue)';
+            });
+
+            // Billing toggle functionality
+            billingToggle.addEventListener('change', function() {
+                isYearlyBilling = this.checked;
+                updatePricing();
+            });
+
+            // Slider functionality with bounce and keyboard accessibility
+            let isDragging = false;
+
+            sliderHandle.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                const sliderRect = sliderBar.getBoundingClientRect();
+                let position = (e.clientX - sliderRect.left) / sliderRect.width;
+                position = Math.max(0, Math.min(1, position));
+                const stepCount = pricingData.length - 1;
+                const value = Math.round(position * stepCount);
+                if (value !== currentSliderValue) {
+                    currentSliderValue = value;
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                    updatePricing();
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                }
+                isDragging = false;
+                document.body.style.userSelect = '';
+            });
+
+            // Touch events for mobile
+            sliderHandle.addEventListener('touchstart', function(e) {
+                isDragging = true;
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                const sliderRect = sliderBar.getBoundingClientRect();
+                let position = (touch.clientX - sliderRect.left) / sliderRect.width;
+                position = Math.max(0, Math.min(1, position));
+                const stepCount = pricingData.length - 1;
+                const value = Math.round(position * stepCount);
+                if (value !== currentSliderValue) {
+                    currentSliderValue = value;
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                    updatePricing();
+                }
+            });
+
+            document.addEventListener('touchend', function() {
+                if (isDragging) {
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                }
+                isDragging = false;
+            });
+
+            // Click on slider bar to set position
+            sliderBar.addEventListener('click', function(e) {
+                const sliderRect = sliderBar.getBoundingClientRect();
+                let position = (e.clientX - sliderRect.left) / sliderRect.width;
+                position = Math.max(0, Math.min(1, position));
+                const stepCount = pricingData.length - 1;
+                const value = Math.round(position * stepCount);
+                if (value !== currentSliderValue) {
+                    currentSliderValue = value;
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                    updatePricing();
+                }
+            });
+
+            // Keyboard accessibility
+            sliderHandle.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft' && currentSliderValue > 0) {
+                    currentSliderValue--;
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                    updatePricing();
+                } else if (e.key === 'ArrowRight' && currentSliderValue < pricingData.length - 1) {
+                    currentSliderValue++;
+                    sliderHandle.classList.add('bounce');
+                    setTimeout(() => sliderHandle.classList.remove('bounce'), 500);
+                    updatePricing();
+                }
+            });
+
+            // Add-ons functionality
+            addOnSelect.addEventListener('change', function() {
+                addOnPrice = parseFloat(this.value) || 0;
+                updatePricing();
+            });
+
+            // Comparison tool
+            compareBtn.addEventListener('click', function() {
+                alert('Comparison: Basic ($8-$36), Premium Support (+$5), Extra Storage (+$10)');
+            });
+
+            // Currency selector with symbol change
+            currencySelect.addEventListener('change', function() {
+                currentCurrency = this.value;
+                updatePricing();
+            });
+
+            // Save preferences
+            saveBtn.addEventListener('click', function() {
+                localStorage.setItem('pricingPrefs', JSON.stringify({ sliderValue: currentSliderValue, isYearly: isYearlyBilling, addOn: addOnPrice, currency: currentCurrency }));
+                alert('Preferences saved!');
+            });
+
+            // Load saved preferences
+            const savedPrefs = JSON.parse(localStorage.getItem('pricingPrefs'));
+            if (savedPrefs) {
+                currentSliderValue = savedPrefs.sliderValue;
+                isYearlyBilling = savedPrefs.isYearly;
+                addOnPrice = savedPrefs.addOn;
+                currentCurrency = savedPrefs.currency;
+                billingToggle.checked = isYearlyBilling;
+                addOnSelect.value = addOnPrice.toString();
+                currencySelect.value = currentCurrency;
+                updatePricing();
+            }
+
+            // Discount code (apply only once)
+            applyCodeBtn.addEventListener('click', function() {
+                const code = discountCodeInput.value.trim();
+                if (code === 'SAVE25' && !discountApplied) {
+                    addOnPrice = Math.max(0, addOnPrice - 2); // Apply discount once
+                    discountApplied = true; // Mark discount as applied
+                    updatePricing();
+                    alert('Discount applied!');
+                } else if (discountApplied) {
+                    alert('Discount has already been applied!');
+                } else {
+                    alert('Invalid code!');
+                }
+                discountCodeInput.value = '';
+            });
+
+            // Testimonial slider
+            setInterval(() => {
+                testimonials[testimonialIndex].classList.remove('active');
+                testimonialIndex = (testimonialIndex + 1) % testimonials.length;
+                testimonials[testimonialIndex].classList.add('active');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
