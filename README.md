@@ -83,9 +83,7 @@ While working on this project, I gained a deeper understanding of:
 ---
 
 ## 👨‍💻 Author
-- Website – [Your Name](#)
-- Frontend Mentor – [@yourusername](https://www.frontendmentor.io/profile/yourusername)
-- Twitter – [@yourusername](https://twitter.com/yourusername)
+- Website – Samkit Jain
 
 ---
 
