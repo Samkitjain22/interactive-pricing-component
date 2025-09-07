@@ -31,17 +31,17 @@ Users should be able to:
 ## 📸 Screenshot
 
 ### 💻 Desktop View
-![Desktop Screenshot](./screenshot/desktop-view.png)
+<img src="./screenshot/desktop-view.png" alt="Desktop Screenshot" width="600"/>
 
 ### 📱 Mobile View
-![Mobile Screenshot](./screenshot/mobile-view.jpeg)
+<img src="./screenshot/mobile-view.jpeg" alt="Mobile Screenshot" width="300"/>
 
 ---
 
 ## 🔗 Links
 
-- **Solution URL:** [GITHUB](#https://github.com/Samkitjain22/interactive-pricing-component)
-- **Live Site URL:** [LIVE WEBSITE](#https://samkitjain22.github.io/interactive-pricing-component)
+- **Solution URL:** [GITHUB](https://github.com/Samkitjain22/interactive-pricing-component)
+- **Live Site URL:** [LIVE WEBSITE](https://samkitjain22.github.io/interactive-pricing-component)
 
 ---
 
